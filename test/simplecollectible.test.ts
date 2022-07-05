@@ -29,14 +29,16 @@ export function testSimpleCollectible(): void {
     // let signers: Array<Signer>;
     let owner: SignerWithAddress,
       owner2: SignerWithAddress,
-      addr1: SignerWithAddress,
-      addr2: SignerWithAddress,
-      addr3: SignerWithAddress;
+      alice: SignerWithAddress,
+      bob: SignerWithAddress,
+      charlie: SignerWithAddress;
     let simpleCollectibleContract: Contract;
+    let tokenURI: string =
+      "https://gateway.pinata.cloud/ipfs/QmNNoMVThrtyCJ6o1JUp1tEZvKaCs49bvrAdHo6owogrJN";
 
     beforeEach(async () => {
       // get signers
-      [owner, owner2, addr1, addr2, addr3] = await ethers.getSigners();
+      [owner, owner2, alice, bob, charlie] = await ethers.getSigners();
 
       // ---------------------------------------------------
       // deploy erc20 token contract
@@ -101,23 +103,80 @@ export function testSimpleCollectible(): void {
     });
 
     describe("Create Collectible", async () => {
-      // it("Succeeds when owner mints token", async () => {
-      //   // get the balance of addr2 before mint
-      //   const balanceAddr2Before: BigNumber =
-      //     await simpleCollectibleContract.balanceOf(addr2.address);
-      //   // owner mint 1 wei to addr2
-      //   await expect(
-      //     simpleCollectibleContract.connect(owner).mint(addr2.address, 1)
-      //   )
-      //     .to.emit(simpleCollectibleContract, "TokenMinted")
-      //     .withArgs(addr2.address, 1);
-      //   // get the balance of addr2 after mint
-      //   const balanceAddr2After: BigNumber =
-      //     await simpleCollectibleContract.balanceOf(addr2.address);
-      //   await expect(balanceAddr2After.sub(balanceAddr2Before)).to.eq(
-      //     BigNumber.from(String(1))
-      //   );
-      // });
+      it("Succeeds when Alice mints for herself", async () => {
+        const idBefore = await simpleCollectibleContract.getNextTokenId();
+        // get the balance of alice before mint
+        const balanceAliceBefore: BigNumber =
+          await simpleCollectibleContract.balanceOf(alice.address);
+        // mint 1 nft token to alice
+        await expect(
+          simpleCollectibleContract.connect(alice).createCollectible(tokenURI)
+        )
+          .to.emit(simpleCollectibleContract, "CollectibleMinted")
+          .withArgs(alice.address, idBefore);
+        // get the balance of alice after mint
+        const balanceAliceAfter: BigNumber =
+          await simpleCollectibleContract.balanceOf(alice.address);
+        await expect(balanceAliceAfter.sub(balanceAliceBefore)).to.eq(
+          BigNumber.from(String(1))
+        );
+      });
+      it("Succeeds when Alice gets nothing when Bob mints for himself", async () => {
+        const idBefore = await simpleCollectibleContract.getNextTokenId();
+        // get the balance of alice before mint
+        const balanceAliceBefore: BigNumber =
+          await simpleCollectibleContract.balanceOf(alice.address);
+        // mint 1 nft token to bob
+        await expect(
+          simpleCollectibleContract.connect(bob).createCollectible(tokenURI)
+        )
+          .to.emit(simpleCollectibleContract, "CollectibleMinted")
+          .withArgs(bob.address, idBefore);
+        // get the balance of alice after mint
+        const balanceAliceAfter: BigNumber =
+          await simpleCollectibleContract.balanceOf(alice.address);
+        await expect(balanceAliceAfter.sub(balanceAliceBefore)).to.eq(
+          BigNumber.from(String(0))
+        );
+      });
+      it("Succeeds when Bob mints after Alice", async () => {
+        // ---------Alice----------
+        const idBefore = await simpleCollectibleContract.getNextTokenId();
+        // get the balance of alice before mint
+        const balanceAliceBefore: BigNumber =
+          await simpleCollectibleContract.balanceOf(alice.address);
+        // mint 1 nft token to alice
+        await expect(
+          simpleCollectibleContract.connect(alice).createCollectible(tokenURI)
+        )
+          .to.emit(simpleCollectibleContract, "CollectibleMinted")
+          .withArgs(alice.address, idBefore);
+        // get the balance of alice after mint
+        const balanceAliceAfter: BigNumber =
+          await simpleCollectibleContract.balanceOf(alice.address);
+        await expect(balanceAliceAfter.sub(balanceAliceBefore)).to.eq(
+          BigNumber.from(String(1))
+        );
+
+        // ---------Bob----------
+        const idBefore2 = await simpleCollectibleContract.getNextTokenId();
+        // get the balance of bob before mint
+        const balanceBobBefore: BigNumber =
+          await simpleCollectibleContract.balanceOf(bob.address);
+        // mint 1 nft token to bob
+        await expect(
+          simpleCollectibleContract.connect(bob).createCollectible(tokenURI)
+        )
+          .to.emit(simpleCollectibleContract, "CollectibleMinted")
+          .withArgs(bob.address, idBefore2);
+        // get the balance of bob after mint
+        const balanceBobAfter: BigNumber =
+          await simpleCollectibleContract.balanceOf(bob.address);
+        await expect(balanceBobAfter.sub(balanceBobBefore)).to.eq(
+          BigNumber.from(String(1))
+        );
+      });
+
       // it("Reverts when non-owner mints token", async () => {
       //   await expect(
       //     simpleCollectibleContract.connect(addr1).mint(addr2.address, 1)

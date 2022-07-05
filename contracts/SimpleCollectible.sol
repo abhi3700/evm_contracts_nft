@@ -10,6 +10,8 @@ contract SimpleCollectible is ERC721, Ownable, Pausable {
 
     mapping(uint256 => string) private _tokenURIs;
 
+    event CollectibleMinted(address to, uint256 tokenId);
+
     constructor() ERC721("Doggie", "Dog") {
         _tokenCounter = 0;
     }
@@ -30,6 +32,8 @@ contract SimpleCollectible is ERC721, Ownable, Pausable {
         _setTokenURI(_newTokenId, _tokenURI);
         ++_tokenCounter;
 
+        emit CollectibleMinted(msg.sender, _newTokenId);
+
         return _newTokenId;
     }
 
@@ -40,6 +44,10 @@ contract SimpleCollectible is ERC721, Ownable, Pausable {
     {
         _requireMinted(_tokenId);
         return _tokenURIs[_tokenId];
+    }
+
+    function getNextTokenId() external view returns (uint256) {
+        return _tokenCounter;
     }
 
     // ------------------------------------------------------------------------------------------

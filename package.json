@@ -1,5 +1,5 @@
 {
-  "name": "Simple Collectible",
+  "name": "SimpleCollectible",
   "version": "0.0.1",
   "description": "Simple NFT contract",
   "main": "index.js",
