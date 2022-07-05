@@ -1,7 +1,3 @@
-// TODO: Add the required files unit test files here
+import { testSimpleCollectible } from "./simplecollectible.test";
 
-// import { testEscrow } from "./escrow.test";
-import { testERC20Token } from "./erc20token.test";
-
-// testEscrow();
-testERC20Token();
+testSimpleCollectible();

@@ -1,0 +1,19 @@
+{
+  "name": "LEO",
+  "description": "Best soul",
+  "image": "https://gateway.pinata.cloud/ipfs/QmPkdFpaYCiWJMkZpbCtAjtxizT8mGhDJa1Yiw9ymPyRp6",
+  "attributes": [
+    {
+      "type": "breed",
+      "value": "labrador"
+    },
+    {
+      "type": "eyes",
+      "value": "brown"
+    },
+    {
+      "type": "color",
+      "value": "white"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
-  "name": "erc20token-contract",
+  "name": "Simple Collectible",
   "version": "0.0.1",
-  "description": "A ERC20 Token SC",
+  "description": "Simple NFT contract",
   "main": "index.js",
   "scripts": {
     "clean": "hardhat clean",

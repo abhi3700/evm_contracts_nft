@@ -1,18 +1,14 @@
-<!-- TODO: # Put the title -->
+# Simple Collectible Smart contract
 
-<!-- TODO: # Put the description of SC -->
+A ERC721 NFT Contract
 
 ## About
 
-<!--
-TODO: Put more info about SC
-
-* It's an **Escrow** contract.
-* [**Instruction**](./instruction.md).
-* Get the **coverage** report [here](./reports.md#coverage).
-* The Escrow SC is **deployed** in Rinkeby testnet. Check the details [here](./reports.md#deployment)
-* The Escrow SC is **verified** in Rinkeby testnet. Check the details [here](./reports.md#verify)
--->
+- It's an simple NFT ERC721 contract.
+<!-- * [**Instruction**](./instruction.md). -->
+- Get the **coverage** report [here](./reports.md#coverage).
+- The SimpleCollectible SC is **deployed** in Rinkeby testnet. Check the details [here](./reports.md#deployment)
+- The SimpleCollectible SC is **verified** in Rinkeby testnet. Check the details [here](./reports.md#verify)
 
 ## Installation
 
