@@ -176,69 +176,55 @@ export function testSimpleCollectible(): void {
           BigNumber.from(String(1))
         );
       });
-
-      // it("Reverts when non-owner mints token", async () => {
-      //   await expect(
-      //     simpleCollectibleContract.connect(addr1).mint(addr2.address, 1)
-      //   ).to.be.revertedWith("Ownable: caller is not the owner");
-      // });
-      // it("Reverts when owner mints zero token", async () => {
-      //   await expect(
-      //     simpleCollectibleContract.connect(owner).mint(addr2.address, 0)
-      //   ).to.be.revertedWith("amount must be positive");
-      // });
-      // it("Reverts when owner mints token to zero address", async () => {
-      //   await expect(
-      //     simpleCollectibleContract.connect(owner).mint(ZERO_ADDRESS, 1)
-      //   ).to.be.revertedWith("ERC20: mint to the zero address");
-      // });
-      // it("Reverts when paused", async () => {
-      //   simpleCollectibleContract.pause();
-      //   // owner mint 1 wei to addr2
-      //   await expect(
-      //     simpleCollectibleContract.connect(owner).mint(addr2.address, 1)
-      //   ).to.be.revertedWith("Pausable: paused");
-      // });
+      it("Reverts when empty tokenURI", async () => {
+        await expect(
+          simpleCollectibleContract.connect(alice).createCollectible("")
+        ).to.be.revertedWith("Empty token URI");
+      });
+      it("Reverts when paused", async () => {
+        simpleCollectibleContract.pause();
+        // owner mint 1 wei to alice
+        await expect(
+          simpleCollectibleContract.connect(alice).createCollectible(tokenURI)
+        ).to.be.revertedWith("Pausable: paused");
+      });
     });
 
-    describe("Burn", async () => {
-      // it("Succeeds when self burns token", async () => {
-      //   // addr1 burn 1 wei to contract
-      //   await expect(
-      //     simpleCollectibleContract.connect(addr2).burn(addr2.address, 1)
-      //   )
-      //     .to.emit(simpleCollectibleContract, "TokenBurnt")
-      //     .withArgs(addr2.address, 1);
-      // });
-      // it("Succeeds when others burns token for you", async () => {
-      //   // addr1 burn 1 wei to contract
-      //   await expect(
-      //     simpleCollectibleContract.connect(addr1).burn(addr2.address, 1)
-      //   )
-      //     .to.emit(simpleCollectibleContract, "TokenBurnt")
-      //     .withArgs(addr2.address, 1);
-      // });
-      // it("Reverts when self burns zero token", async () => {
-      //   // addr1 burn 1 wei to contract
-      //   // eslint-disable-next-line prettier/prettier
-      //   await expect(
-      //     simpleCollectibleContract.connect(addr2).burn(addr2.address, 0)
-      //   ).to.be.revertedWith("amount must be positive");
-      // });
-      // it("Reverts when burnt from zero address", async () => {
-      //   // addr1 burn 1 wei to contract
-      //   // eslint-disable-next-line prettier/prettier
-      //   await expect(
-      //     simpleCollectibleContract.connect(addr2).burn(ZERO_ADDRESS, 1)
-      //   ).to.be.revertedWith("ERC20: burn from the zero address");
-      // });
-      // it("Reverts when paused", async () => {
-      //   simpleCollectibleContract.pause();
-      //   // addr3 release amount to payee
-      //   await expect(
-      //     simpleCollectibleContract.connect(addr2).burn(addr2.address, 1)
-      //   ).to.be.revertedWith("Pausable: paused");
-      // });
+    describe("Get Next available token id", async () => {
+      it("Succeeds in getting token id", async () => {
+        const id = await simpleCollectibleContract.getNextTokenId();
+        await expect(id).to.eq(String(0));
+      });
+    });
+
+    describe("Get token URI", async () => {
+      it("Succeeds for a minted token id", async () => {
+        // mint
+        const idBefore = await simpleCollectibleContract.getNextTokenId();
+        // mint 1 nft token to alice
+        await expect(
+          simpleCollectibleContract.connect(alice).createCollectible(tokenURI)
+        )
+          .to.emit(simpleCollectibleContract, "CollectibleMinted")
+          .withArgs(alice.address, idBefore);
+        // check for the minted tokenId
+        const uri = await simpleCollectibleContract.getTokenURI(idBefore);
+        await expect(uri).to.eq(tokenURI);
+      });
+      it("Fails for a non-minted token id", async () => {
+        // mint
+        const idBefore = await simpleCollectibleContract.getNextTokenId();
+        // mint 1 nft token to alice
+        await expect(
+          simpleCollectibleContract.connect(alice).createCollectible(tokenURI)
+        )
+          .to.emit(simpleCollectibleContract, "CollectibleMinted")
+          .withArgs(alice.address, idBefore);
+        // check for the minted tokenId
+        await expect(
+          simpleCollectibleContract.getTokenURI(idBefore + 1)
+        ).to.be.revertedWith("ERC721: invalid token ID");
+      });
     });
   });
 }

@@ -18,13 +18,14 @@ contract SimpleCollectible is ERC721, Ownable, Pausable {
 
     function _setTokenURI(uint256 _tokenId, string memory _tokenURI) private {
         !_exists(_tokenId);
-        require(bytes(_tokenURI).length > 0, "empty token URI");
+        require(bytes(_tokenURI).length > 0, "Empty token URI");
 
         _tokenURIs[_tokenId] = _tokenURI;
     }
 
     function createCollectible(string memory _tokenURI)
         external
+        whenNotPaused
         returns (uint256)
     {
         uint256 _newTokenId = _tokenCounter;
@@ -37,6 +38,10 @@ contract SimpleCollectible is ERC721, Ownable, Pausable {
         return _newTokenId;
     }
 
+    function getNextTokenId() external view returns (uint256) {
+        return _tokenCounter;
+    }
+
     function getTokenURI(uint256 _tokenId)
         external
         view
@@ -44,10 +49,6 @@ contract SimpleCollectible is ERC721, Ownable, Pausable {
     {
         _requireMinted(_tokenId);
         return _tokenURIs[_tokenId];
-    }
-
-    function getNextTokenId() external view returns (uint256) {
-        return _tokenCounter;
     }
 
     // ------------------------------------------------------------------------------------------
