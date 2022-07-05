@@ -113,4 +113,8 @@ dist
 # Mac
 .DS_Store
 
+# CI/CD
 .github/
+
+# remix
+artifacts/
